@@ -19,10 +19,8 @@ function preMain() {
 
 
 function main(nBars) {
-    var state = getBarState();
-    var currentBar = Math.abs(getCurrentBarIndex());
 
-    if(state != BARSTATE_ALLBARS) {
+    if(getBarState() != BARSTATE_ALLBARS) {
         //clearLines();
         clearText();
         clearShape();
