@@ -1,0 +1,89 @@
+/*****************************************************************
+Provided By:                                                      
+    DreamWalkOnline
+******************************************************************/
+
+function preMain() {
+
+    setPriceStudy(true);
+    setStudyTitle("Local Trends");
+    setShowCursorLabel(false);
+    
+    var nBarsParam = new FunctionParameter("nBars", FunctionParameter.NUMBER);
+    nBarsParam.setName("Max number of bars");
+    nBarsParam.setUpperLimit(300);
+    nBarsParam.setLowerLimit(3);
+    nBarsParam.setDefault(20);
+}
+
+
+
+function main(nBars) {
+    var state = getBarState();
+    var currentBar = Math.abs(getCurrentBarIndex());
+
+    if(state != BARSTATE_ALLBARS) {
+        //clearLines();
+        clearText();
+        clearShape();
+
+        var gap = calculateGap(close(0));
+        var lPriceIndex = 0;
+        var hPriceIndex = 0;
+        var index = 1;
+        var lFound = 0;
+        var hFound = 0;
+        
+        var lPrice = low(-index);
+        var hPrice = high(-index);
+        
+        for (index = 2; index < nBars; index++)
+        {
+            if( lPrice == low(-index) || lPrice == high(-index) ) {
+                lPriceIndex = index;
+                lFound = lFound + 1;
+            }
+            if( hPrice == low(-index) || hPrice == high(-index) ) {
+                hPriceIndex = index;
+                hFound = hFound + 1;
+            }
+        }
+        
+        if ( lFound > 0) {
+            if(low(0) > lPrice - 0.009 && low(0) < lPrice + gap) {
+                var level = Math.round(lPrice * 100);
+                
+                drawLineRelative( -lPriceIndex, lPrice, 0, lPrice, PS_DASH, 1, Color.green, lPrice );
+                drawTextRelative(2, lPrice, level, Color.olive, null, Text.BOTTOM | Text.LEFT, null, 8, lPrice + 300);
+                drawShapeRelative( 1, lPrice, Shape.UPARROW, null, Color.green, Shape.TOP, lPrice);
+            }
+        }
+
+        if ( hFound > 0) {
+            if(high(0) < hPrice + 0.009 && high(0) > hPrice - gap) {
+                var level = Math.round(hPrice * 100);
+                
+                drawLineRelative( -hPriceIndex, hPrice, 0, hPrice, PS_DASH, 1, Color.red, hPrice );
+                drawTextRelative(2, hPrice, level, Color.olive, null, Text.BOTTOM | Text.LEFT, null, 8, hPrice + 300);
+                drawShapeRelative( 1, hPrice, Shape.DOWNARROW, null, Color.red, Shape.BOTTOM, hPrice);
+            }
+        }
+    }
+
+    return;
+}
+
+function calculateGap(price) {
+    if(price < 40) {return 0.01;}
+    if(price < 60) {return 0.02;}
+    if(price < 80) {return 0.03;}
+    return 0.04;
+}
+
+
+
+  
+
+
+  
+
